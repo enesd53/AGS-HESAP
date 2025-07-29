@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MEB-AGS Puan Hesaplama Robotu</title>
+    <style>
+        /* Sayfanın genel stil ayarları */
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            line-height: 1.6;
+            background-color: #f4f4f4;
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+        /* Ana hesaplama kutusu */
+        .container {
+            background: #fff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            max-width: 600px;
+            width: 100%;
+        }
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+        }
+        h3 {
+            color: #34495e;
+            border-bottom: 2px solid #ecf0f1;
+            padding-bottom: 5px;
+            margin-top: 25px;
+        }
+        /* "Created by" yazısı için stil */
+        .creator {
+            text-align: center;
+            font-style: italic;
+            color: #7f8c8d;
+            font-size: 0.9em;
+            margin-top: -15px;
+        }
+        /* Doğru-Yanlış giriş kutuları */
+        .input-group {
+            display: flex;
+            gap: 15px;
+        }
+        input[type="number"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #bdc3c7;
+            border-radius: 5px;
+            font-size: 1em;
+        }
+        /* Hesaplama butonu */
+        button {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            margin-top: 30px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 1.2em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+        /* Sonuç alanı */
+        #sonucAlani {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #ecf0f1;
+            border-left: 5px solid #3498db;
+            border-radius: 5px;
+        }
+        /* Alt bilgi notu */
+        footer {
+            margin-top: 30px;
+            font-size: 0.8em;
+            color: #95a5a6;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>MEB-AGS Puan Hesaplama Robotu</h1>
+        <p class="creator">Created by Enes Demir</p>
+        
+        <h3>Sözel Yetenek</h3>
+        <div class="input-group">
+            <input type="number" id="sozelDogru" placeholder="Doğru Sayısı">
+            <input type="number" id="sozelYanlis" placeholder="Yanlış Sayısı">
+        </div>
+
+        <h3>Sayısal Yetenek</h3>
+        <div class="input-group">
+            <input type="number" id="sayisalDogru" placeholder="Doğru Sayısı">
+            <input type="number" id="sayisalYanlis" placeholder="Yanlış Sayısı">
+        </div>
+
+        <h3>Tarih</h3>
+        <div class="input-group">
+            <input type="number" id="tarihDogru" placeholder="Doğru Sayısı">
+            <input type="number" id="tarihYanlis" placeholder="Yanlış Sayısı">
+        </div>
+
+        <h3>Coğrafya</h3>
+        <div class="input-group">
+            <input type="number" id="cografyaDogru" placeholder="Doğru Sayısı">
+            <input type="number" id="cografyaYanlis" placeholder="Yanlış Sayısı">
+        </div>
+
+        <h3>Eğitimin Temelleri</h3>
+        <div class="input-group">
+            <input type="number" id="egitimDogru" placeholder="Doğru Sayısı">
+            <input type="number" id="egitimYanlis" placeholder="Yanlış Sayısı">
+        </div>
+
+        <h3>Mevzuat</h3>
+        <div class="input-group">
+            <input type="number" id="mevzuatDogru" placeholder="Doğru Sayısı">
+            <input type="number" id="mevzuatYanlis" placeholder="Yanlış Sayısı">
+        </div>
+
+        <h3>ÖABT (DKAB)</h3>
+        <div class="input-group">
+            <input type="number" id="oabtDogru" placeholder="Doğru Sayısı">
+            <input type="number" id="oabtYanlis" placeholder="Yanlış Sayısı">
+        </div>
+
+        <button onclick="hesaplaPuan()">PUANI HESAPLA</button>
+        
+        <div id="sonucAlani"></div>
+
+        <footer>
+            <p>Bu robot sadece DKAB (Din Kültürü ve Ahlak Bilgisi) öğrencileri içindir.</p>
+            Derslere tahmini ortalamalar ve standart sapmalar verilmiş ve AGS hesaplama formülüne göre hazırlanmıştır.
+        </footer>
+    </div>
+
+    <script>
+        function hesaplaPuan() {
+            // --- 1. ADIM: Sabit Değerleri ve Test İstatistiklerini Tanımla ---
+            const testler = {
+                sozel:    { isim: 'Sözel Yetenek',   agirlik: 0.10,  ort: 7.4,  ss: 4.1, soruSayisi: 15 },
+                sayisal:  { isim: 'Sayısal Yetenek', agirlik: 0.10,  ort: 3.3,  ss: 2.8, soruSayisi: 15 },
+                tarih:    { isim: 'Tarih',           agirlik: 0.075, ort: 4.2,  ss: 2.2, soruSayisi: 10 },
+                cografya: { isim: 'Coğrafya',        agirlik: 0.05,  ort: 3.25, ss: 1.7, soruSayisi: 8 },
+                egitim:   { isim: 'Eğitimin Temelleri', agirlik: 0.125, ort: 11.5, ss: 5.3, soruSayisi: 24 },
+                mevzuat:  { isim: 'Mevzuat',         agirlik: 0.05,  ort: 4.25, ss: 2.3, soruSayisi: 8 },
+                oabt:     { isim: 'ÖABT',            agirlik: 0.50,  ort: 25.0, ss: 9.0, soruSayisi: 50 }
+            };
+
+            const sonucDiv = document.getElementById('sonucAlani');
+            
+            // --- 2. ADIM: GİRDİ KONTROLÜ ---
+            for (const key in testler) {
+                const ders = testler[key];
+                const dogru = parseFloat(document.getElementById(key + 'Dogru').value) || 0;
+                const yanlis = parseFloat(document.getElementById(key + 'Yanlis').value) || 0;
+
+                if (dogru < 0 || yanlis < 0) {
+                     sonucDiv.innerHTML = `<h3 style="color: red;">HATA</h3><p>Lütfen negatif değer girmeyiniz.</p>`;
+                     return;
+                }
+
+                if (dogru + yanlis > ders.soruSayisi) {
+                    sonucDiv.innerHTML = `<h3 style="color: red;">HATA</h3><p><b>${ders.isim}</b> için girdiğiniz doğru (${dogru}) ve yanlış (${yanlis}) sayısı toplamı, o dersin toplam soru sayısını (${ders.soruSayisi}) geçemez.</p>`;
+                    return; 
+                }
+            }
+
+            // --- 3. ADIM: AP ve Toplam Netleri Hesapla ---
+            let agirlikliPuan = 0;
+            let agsNetToplami = 0;
+            let oabtNeti = 0;
+
+            for (const key in testler) {
+                const ders = testler[key];
+                const dogru = parseFloat(document.getElementById(key + 'Dogru').value) || 0;
+                const yanlis = parseFloat(document.getElementById(key + 'Yanlis').value) || 0;
+                const net = dogru - (yanlis * 0.25);
+                
+                // --- YENİ EKLENEN KISIM: Netleri Toplama ---
+                if (key === 'oabt') {
+                    oabtNeti = net;
+                } else {
+                    agsNetToplami += net;
+                }
+                
+                const standartPuan = 50 + 10 * ((net - ders.ort) / ders.ss);
+                agirlikliPuan += standartPuan * ders.agirlik;
+            }
+
+            // --- 4. ADIM: Nihai Puanı Hesapla ---
+            const X = 45;
+            const S = 15;
+            const B = 80;
+            
+            const pay = 30 * (2 * (agirlikliPuan - X) - S);
+            const payda = 2 * (B - X) - S;
+            const nihaiPuan = 70 + (pay / payda);
+
+            // --- 5. ADIM: Sonucu Ekranda Göster ---
+            sonucDiv.innerHTML = `
+                <h2>Hesaplama Sonucunuz</h2>
+                <p>Hesaplanan Ağırlıklı Puanınız (AP): <strong>${agirlikliPuan.toFixed(2)}</strong></p>
+                <h3>Tahmini Sınav Puanınız: <strong>${nihaiPuan.toFixed(2)}</strong></h3>
+                <hr style="border: 0; border-top: 1px solid #ccc; margin: 10px 0;">
+                <p style="font-size:0.9em; margin-bottom: 2px;">AGS Toplam Netiniz: <strong>${agsNetToplami.toFixed(2)}</strong></p>
+                <p style="font-size:0.9em; margin-top: 2px;">ÖABT Netiniz: <strong>${oabtNeti.toFixed(2)}</strong></p>
+            `;
+        }
+    </script>
+</body>
+</html>
